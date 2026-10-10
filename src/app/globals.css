@@ -1,0 +1,177 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Design tokens. Components read these through the Tailwind theme below,
+   so the palette can be changed in one place. */
+:root {
+  --background: #f6f7fb;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-foreground: #ffffff;
+  --primary-glow: #818cf8;
+  --secondary: #eef2ff;
+  --secondary-foreground: #3730a3;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f5f3ff;
+  --border: #e2e8f0;
+  --input: #cbd5e1;
+  --ring: #6366f1;
+  --destructive: #e11d48;
+  --destructive-foreground: #ffffff;
+  --success: #059669;
+  --warning: #d97706;
+  --radius: 0.875rem;
+  --shadow-color: 221 39% 11%;
+  --shadow-soft: 0 1px 2px hsl(var(--shadow-color) / 0.04), 0 2px 8px hsl(var(--shadow-color) / 0.06);
+  --shadow-raised: 0 2px 4px hsl(var(--shadow-color) / 0.04), 0 8px 24px hsl(var(--shadow-color) / 0.08);
+  --shadow-glow: 0 0 0 1px hsl(243 75% 59% / 0.08), 0 8px 24px hsl(243 75% 59% / 0.16);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-primary-glow: var(--primary-glow);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 6px);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--primary) 25%, transparent);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--muted-foreground);
+    background-clip: content-box;
+  }
+}
+
+@layer utilities {
+  /* Soft radial glow used behind hero sections and marketing CTAs. */
+  .bg-mesh {
+    background-image:
+      radial-gradient(60% 50% at 15% 0%, color-mix(in srgb, var(--primary) 14%, transparent), transparent),
+      radial-gradient(45% 40% at 100% 10%, color-mix(in srgb, var(--primary-glow) 16%, transparent), transparent);
+  }
+
+  /* Faint dot grid for texture without noise. */
+  .bg-dot-grid {
+    background-image: radial-gradient(color-mix(in srgb, var(--foreground) 14%, transparent) 1px, transparent 1px);
+    background-size: 22px 22px;
+    mask-image: linear-gradient(to bottom, black, transparent);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-raised {
+    box-shadow: var(--shadow-raised);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .text-gradient-brand {
+    background-image: linear-gradient(115deg, var(--foreground) 10%, var(--primary) 60%, var(--primary-glow) 100%);
+    background-clip: text;
+    color: transparent;
+  }
+
+  .animate-in-up {
+    animation: fade-in-up 0.5s ease-out both;
+  }
+
+  /* Frosted glass surface: translucent card tint + blur + a soft inner highlight.
+     Used sparingly on floating chrome (headers, drawers, menus, dialogs). */
+  .glass {
+    background-color: color-mix(in srgb, var(--card) 72%, transparent);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid color-mix(in srgb, white 35%, var(--border));
+    box-shadow: var(--shadow-raised), inset 0 1px 0 color-mix(in srgb, white 50%, transparent);
+  }
+
+  .glass-strong {
+    background-color: color-mix(in srgb, var(--card) 85%, transparent);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Respect reduced-motion preferences: keep the end state, drop the motion. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-in-up {
+    animation-duration: 0.01ms !important;
+  }
+}
