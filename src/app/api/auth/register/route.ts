@@ -13,12 +13,20 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   const { fullName, email, password, role, companyName } = parsed.data;
   const payload = role === "COMPANY" ? { fullName, email, password, role, companyName } : { fullName, email, password, role };
-  const upstream = await fetch(`${API_BASE_URL}/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-    cache: "no-store",
-  });
+  let upstream: Response;
+  try {
+    upstream = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      cache: "no-store",
+    });
+  } catch {
+    return NextResponse.json(
+      { success: false, message: "Cannot reach the registration service. Please try again." },
+      { status: 502 },
+    );
+  }
   const json = (await upstream.json().catch(() => null)) as (ApiEnvelope<AuthPayload & { tokens: TokenPair }>) | null;
 
   if (!upstream.ok || !json?.success) {

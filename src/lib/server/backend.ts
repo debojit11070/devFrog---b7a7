@@ -16,12 +16,17 @@ export async function backendJson<T>(path: string, options: BackendOptions = {})
   if (body !== undefined) headers["Content-Type"] = "application/json";
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    method,
-    headers,
-    body: body === undefined ? undefined : JSON.stringify(body),
-    cache: "no-store",
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      method,
+      headers,
+      body: body === undefined ? undefined : JSON.stringify(body),
+      cache: "no-store",
+    });
+  } catch {
+    throw new ApiError("Cannot reach the API service.", 502);
+  }
   const json = (await response.json().catch(() => null)) as ApiEnvelope<T> | null;
   if (!response.ok || !json?.success) {
     throw new ApiError(json?.message ?? `Request failed (${response.status})`, response.status, json?.errors);

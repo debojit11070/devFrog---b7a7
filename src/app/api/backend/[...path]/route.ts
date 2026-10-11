@@ -22,7 +22,12 @@ async function forward(
   if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
 
   const target = `${API_BASE_URL}/${path.map(encodeURIComponent).join("/")}${request.nextUrl.search}`;
-  return fetch(target, { method: request.method, headers, body, cache: "no-store" });
+  try {
+    return await fetch(target, { method: request.method, headers, body, cache: "no-store" });
+  } catch {
+    // Backend unreachable: return a clear error instead of crashing the handler.
+    return NextResponse.json({ success: false, message: "Cannot reach the API service." }, { status: 502 });
+  }
 }
 
 async function handle(request: NextRequest, context: RouteContext): Promise<NextResponse> {
