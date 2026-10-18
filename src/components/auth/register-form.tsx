@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
+import { SocialButtons } from "@/components/auth/social-buttons";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/form-controls";
@@ -60,7 +61,8 @@ export function RegisterForm() {
         <CardTitle className="text-xl">Create your account</CardTitle>
         <CardDescription>Choose the account type that fits you best.</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-col gap-5">
+        <SocialButtons />
         <form onSubmit={onSubmit} noValidate className="flex flex-col gap-5">
           <fieldset className="grid gap-3 sm:grid-cols-2">
             <legend className="mb-2 text-sm font-medium">Account type</legend>
@@ -125,7 +127,7 @@ export function RegisterForm() {
             Create account
           </Button>
         </form>
-        <p className="mt-4 text-center text-sm text-muted-foreground">
+        <p className="text-center text-sm text-muted-foreground">
           Already registered?{" "}
           <Link href="/login" className="font-medium text-primary hover:underline">
             Sign in

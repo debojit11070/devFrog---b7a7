@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/form-controls";
 import { FormField, fieldAria } from "@/components/shared/form-field";
+import { SocialButtons } from "@/components/auth/social-buttons";
 import { useSignIn, type Credentials } from "@/components/auth/use-sign-in";
 import { DEMO_ACCOUNTS } from "@/lib/constants";
 import { loginSchema, type LoginFormValues } from "@/lib/validations/auth";
@@ -26,6 +27,7 @@ export function LoginForm() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -36,6 +38,9 @@ export function LoginForm() {
   const onSubmit = handleSubmit((values) => signIn.mutateAsync(values).catch(() => undefined));
 
   function signInAsDemo(role: Role, credentials: Credentials) {
+    // Fill the form so the visitor sees which credentials are being used, then sign in.
+    setValue("email", credentials.email, { shouldValidate: true });
+    setValue("password", credentials.password, { shouldValidate: true });
     setPendingDemo(role);
     signIn.mutate(credentials, { onSettled: () => setPendingDemo(null) });
   }
@@ -47,7 +52,8 @@ export function LoginForm() {
           <CardTitle className="text-xl">Welcome back</CardTitle>
           <CardDescription>Sign in to continue to your dashboard.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col gap-5">
+          <SocialButtons />
           <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
             <FormField id="email" label="Email" error={errors.email}>
               <Input type="email" autoComplete="email" {...fieldAria("email", errors.email)} {...register("email")} />
@@ -65,7 +71,7 @@ export function LoginForm() {
               Sign in
             </Button>
           </form>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
+          <p className="text-center text-sm text-muted-foreground">
             New here?{" "}
             <Link href="/register" className="font-medium text-primary hover:underline">
               Create an account
@@ -85,7 +91,7 @@ export function LoginForm() {
           <h2 id="demo-heading" className="text-sm font-semibold">
             Quick demo login
           </h2>
-          <p className="text-xs text-muted-foreground">One click signs you in as each role so you can explore its dashboard.</p>
+          <p className="text-xs text-muted-foreground">One click fills the credentials and signs you in as that role.</p>
         </div>
         <div className="grid gap-3 sm:grid-cols-3">
           {DEMO_ACCOUNTS.map((account) => {

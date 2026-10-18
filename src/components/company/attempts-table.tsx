@@ -4,6 +4,10 @@ import { useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ClipboardCheck, Users } from "lucide-react";
+import { Pagination } from "@/components/shared/pagination";
+import { SearchInput } from "@/components/shared/search-input";
+import { Select } from "@/components/ui/form-controls";
+import { usePagedRows } from "@/hooks/use-paged-rows";
 import { DataTable, type Column } from "@/components/shared/data-table";
 import { FormField, fieldAria } from "@/components/shared/form-field";
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -21,6 +25,20 @@ import { formatDateTime } from "@/lib/utils";
 export function AttemptsTable({ assessment }: { assessment: Assessment }) {
   const query = useAssessmentAttempts(assessment.id);
   const [evaluating, setEvaluating] = useState<Attempt | null>(null);
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
+
+  const filtered = useMemo(
+    () =>
+      (query.data ?? []).filter(
+        (row) =>
+          (!status || row.status === status) &&
+          (!search ||
+            `${row.candidate?.fullName ?? ""} ${row.candidate?.email ?? ""}`.toLowerCase().includes(search.toLowerCase())),
+      ),
+    [query.data, search, status],
+  );
+  const paged = usePagedRows(filtered);
 
   const manualTargets: ManualScoreTarget[] = useMemo(
     () =>
@@ -91,14 +109,43 @@ export function AttemptsTable({ assessment }: { assessment: Assessment }) {
 
   return (
     <>
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <SearchInput
+          label="Search candidates"
+          placeholder="Search by name or email"
+          value={search}
+          onValueChange={(value) => {
+            setSearch(value);
+            paged.setPage(1);
+          }}
+        />
+        <Select
+          aria-label="Filter by status"
+          value={status}
+          onChange={(event) => {
+            setStatus(event.target.value);
+            paged.setPage(1);
+          }}
+          className="sm:ml-auto sm:w-48"
+        >
+          <option value="">All statuses</option>
+          <option value="IN_PROGRESS">In progress</option>
+          <option value="SUBMITTED">Submitted</option>
+          <option value="EVALUATED">Evaluated</option>
+          <option value="EXPIRED">Expired</option>
+        </Select>
+      </div>
       <DataTable
         caption={`Attempts for ${assessment.title}`}
         columns={columns}
-        rows={query.data ?? []}
+        rows={paged.rows}
         rowKey={(row) => row.id}
         isLoading={query.isPending}
         empty={<EmptyState icon={Users} title="No attempts yet" description="Attempts appear here after candidates accept an invitation and start." />}
       />
+      <div className="mt-4">
+        <Pagination meta={paged.meta} onPageChange={paged.setPage} />
+      </div>
       {evaluating ? (
         <EvaluateDialog
           attempt={evaluating}

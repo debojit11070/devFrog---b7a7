@@ -15,6 +15,8 @@ import { ROLE_LABEL } from "@/lib/constants";
 import { cn, getInitials } from "@/lib/utils";
 import { useUiStore } from "@/store/ui-store";
 import { toast } from "sonner";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { UserMenu } from "@/components/shared/user-menu";
 
 export function AppShell({ user, children }: { user: User; children: ReactNode }) {
   const navItems = NAV_BY_ROLE[user.role];
@@ -83,15 +85,23 @@ export function AppShell({ user, children }: { user: User; children: ReactNode }
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="glass sticky top-0 z-30 flex h-14 items-center justify-between border-x-0 border-t-0 px-4 lg:hidden">
-          <Button variant="ghost" size="icon" aria-label="Open navigation" onClick={() => setMobileNavOpen(true)}>
-            <Menu />
-          </Button>
-          <Link href="/" className="flex items-center gap-2 font-semibold">
-            <BrandMark />
-            DevForge
-          </Link>
-          <span className="size-9" aria-hidden />
+        <header className="glass sticky top-0 z-30 flex h-14 items-center justify-between gap-3 rounded-none border-x-0 border-t-0 px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" aria-label="Open navigation" className="lg:hidden" onClick={() => setMobileNavOpen(true)}>
+              <Menu />
+            </Button>
+            <Link href="/" className="flex items-center gap-2 font-semibold lg:hidden">
+              <BrandMark />
+              DevForge
+            </Link>
+            <p className="hidden text-sm text-muted-foreground lg:block">
+              {ROLE_LABEL[user.role]} dashboard
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <UserMenu user={user} />
+          </div>
         </header>
         <main id="main" className="flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
           <div key={pathname} className="mx-auto w-full max-w-6xl animate-in-up">
@@ -139,7 +149,7 @@ function UserCard({ user }: { user: User }) {
   return (
     <div className="border-t border-border p-3">
       <div className="flex items-center gap-3 rounded-lg p-2">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-secondary to-indigo-100 text-sm font-semibold text-secondary-foreground ring-1 ring-inset ring-primary/10">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-secondary to-accent text-sm font-semibold text-secondary-foreground ring-1 ring-inset ring-primary/10">
           {getInitials(user.fullName)}
         </span>
         <div className="min-w-0 flex-1">

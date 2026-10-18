@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function AssessmentsPage() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
       <div className="mb-8 max-w-2xl">
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Assessments</h1>
         <p className="mt-2 text-muted-foreground">Published tests from companies on DevForge. Sign in to accept an invitation and take one.</p>

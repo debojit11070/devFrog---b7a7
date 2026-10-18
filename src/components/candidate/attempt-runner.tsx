@@ -300,7 +300,7 @@ function Runner({ attempt, assessment }: { attempt: Attempt; assessment: Assessm
                     <span
                       className={cn(
                         "flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold",
-                        answered ? "bg-success text-white" : "bg-muted text-muted-foreground",
+                        answered ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground",
                       )}
                     >
                       {answered ? <Check className="size-3.5" aria-hidden /> : position + 1}

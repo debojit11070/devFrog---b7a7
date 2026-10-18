@@ -1,5 +1,6 @@
 "use client";
 
+import { BarChartCard } from "@/components/charts/bar-chart-card";
 import Link from "next/link";
 import { ClipboardList, Code2, FilePenLine, Globe, Plus } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
@@ -63,6 +64,31 @@ export function CompanyOverview() {
             </>
           )}
         </section>
+      )}
+
+      {loading || failed ? null : (
+        <div className="grid gap-6 lg:grid-cols-2">
+          <BarChartCard
+            title="Assessments by status"
+            description="Your drafts and archive next to what is live on the platform"
+            data={[
+              { label: "Drafts", value: drafts.data?.meta.total ?? 0 },
+              { label: "Archived", value: archived.data?.meta.total ?? 0 },
+              { label: "Published", value: published.data?.meta.total ?? 0 },
+            ]}
+            valueLabel="Assessments"
+          />
+          <BarChartCard
+            title="Content mix"
+            description="Question bank size compared with assessments"
+            data={[
+              { label: "Questions", value: bank.data?.meta.total ?? 0 },
+              { label: "Assessments", value: (drafts.data?.meta.total ?? 0) + (archived.data?.meta.total ?? 0) },
+            ]}
+            valueLabel="Items"
+            kind="pie"
+          />
+        </div>
       )}
 
       <Card>

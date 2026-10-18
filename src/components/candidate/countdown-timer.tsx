@@ -34,7 +34,7 @@ export function CountdownTimer({ expiresAt, onExpire }: { expiresAt: string; onE
       aria-label={`Time remaining ${minutes} minutes ${seconds} seconds`}
       className={cn(
         "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-semibold tabular-nums",
-        remainingSec === 0 ? "border-rose-200 bg-rose-50 text-rose-700" : urgent ? "border-amber-200 bg-amber-50 text-amber-700" : "border-border bg-card",
+        remainingSec === 0 ? "border-destructive/30 bg-destructive/10 text-destructive" : urgent ? "border-warning/30 bg-warning/10 text-warning" : "border-border bg-card",
       )}
     >
       <Timer className="size-4" aria-hidden />

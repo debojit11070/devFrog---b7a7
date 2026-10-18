@@ -59,7 +59,7 @@ export default function ServicesPage() {
       <div className="mt-14 grid gap-6 lg:grid-cols-3">
         {AUDIENCES.map((audience) => (
           <Card key={audience.title} className="flex flex-col p-6 transition hover:-translate-y-1 hover:shadow-raised">
-            <span className="flex size-11 items-center justify-center rounded-lg bg-gradient-to-br from-secondary to-indigo-100 text-primary">
+            <span className="flex size-11 items-center justify-center rounded-lg bg-gradient-to-br from-secondary to-accent text-primary">
               <audience.icon className="size-5" aria-hidden />
             </span>
             <h2 className="mt-5 text-lg font-semibold">{audience.title}</h2>
@@ -79,7 +79,7 @@ export default function ServicesPage() {
       </div>
 
       <Card className="mt-10 flex flex-col gap-4 p-6 sm:flex-row sm:items-center">
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-success">
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-success/10 text-success">
           <CreditCard className="size-5" aria-hidden />
         </span>
         <div className="flex-1">

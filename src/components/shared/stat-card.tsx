@@ -3,10 +3,10 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 const iconTone = {
-  brand: "bg-gradient-to-br from-secondary to-indigo-100 text-primary",
-  success: "bg-gradient-to-br from-emerald-50 to-emerald-100 text-success",
-  warning: "bg-gradient-to-br from-amber-50 to-amber-100 text-warning",
-  info: "bg-gradient-to-br from-sky-50 to-sky-100 text-sky-600",
+  brand: "bg-gradient-to-br from-secondary to-accent text-primary",
+  success: "bg-success/10 text-success",
+  warning: "bg-warning/10 text-warning",
+  info: "bg-primary/10 text-primary",
 } as const;
 
 export function StatCard({

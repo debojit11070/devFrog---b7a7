@@ -42,7 +42,7 @@ export default function AboutPage() {
       <div className="mt-14 grid gap-6 md:grid-cols-3">
         {VALUES.map((value) => (
           <Card key={value.title} className="p-6 transition hover:-translate-y-1 hover:shadow-raised">
-            <span className="flex size-11 items-center justify-center rounded-lg bg-gradient-to-br from-secondary to-indigo-100 text-primary">
+            <span className="flex size-11 items-center justify-center rounded-lg bg-gradient-to-br from-secondary to-accent text-primary">
               <value.icon className="size-5" aria-hidden />
             </span>
             <h2 className="mt-5 text-lg font-semibold">{value.title}</h2>

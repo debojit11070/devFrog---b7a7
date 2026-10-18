@@ -50,3 +50,9 @@ export const DEMO_ACCOUNTS: Array<{
 ];
 
 export const PAGE_SIZE = 10;
+
+export const ROLE_PROFILE: Record<Role, string> = {
+  ADMIN: "/admin/profile",
+  COMPANY: "/company/profile",
+  CANDIDATE: "/candidate/profile",
+};

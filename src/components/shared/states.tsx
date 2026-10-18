@@ -18,7 +18,7 @@ export function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 px-6 py-12 text-center">
-      <div className="flex size-14 items-center justify-center rounded-full bg-gradient-to-br from-secondary to-indigo-100 text-primary ring-1 ring-inset ring-primary/10">
+      <div className="flex size-14 items-center justify-center rounded-full bg-gradient-to-br from-secondary to-accent text-primary ring-1 ring-inset ring-primary/10">
         <Icon className="size-6" aria-hidden />
       </div>
       <div className="max-w-sm">
@@ -33,9 +33,9 @@ export function EmptyState({
 /** Inline error with a retry button, used when a query fails. */
 export function ErrorState({ error, onRetry, title = "We couldn't load this" }: { error: unknown; onRetry?: () => void; title?: string }) {
   return (
-    <Card className="border-rose-200/70 bg-rose-50/40">
+    <Card className="border-destructive/30 bg-destructive/5">
       <div className="flex flex-col items-center gap-3 px-6 py-10 text-center">
-        <div className="flex size-12 items-center justify-center rounded-full bg-rose-100 text-destructive">
+        <div className="flex size-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
           <AlertTriangle className="size-6" aria-hidden />
         </div>
         <div className="max-w-md">

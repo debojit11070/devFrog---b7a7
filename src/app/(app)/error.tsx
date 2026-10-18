@@ -13,7 +13,7 @@ export default function AppError({ error, reset }: { error: Error & { digest?: s
   }, [error]);
 
   return (
-    <Card role="alert" className="mx-auto max-w-lg border-rose-200 p-8 text-center">
+    <Card role="alert" className="mx-auto max-w-lg border-destructive/30 p-8 text-center">
       <AlertTriangle className="mx-auto size-8 text-destructive" aria-hidden />
       <h1 className="mt-4 text-lg font-semibold">This page hit a problem</h1>
       <p className="mt-2 text-sm text-muted-foreground">{getErrorMessage(error)}</p>

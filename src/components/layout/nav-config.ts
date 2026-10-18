@@ -1,4 +1,4 @@
-import { Building2, ClipboardList, CreditCard, Code2, LayoutDashboard, Mail, ScrollText, UserRound, Users, type LucideIcon } from "lucide-react";
+import { Building2, Briefcase, ClipboardList, Settings, CreditCard, Code2, LayoutDashboard, Mail, ScrollText, UserRound, Users, type LucideIcon } from "lucide-react";
 import type { Role } from "@/lib/api/types";
 
 export interface NavItem {
@@ -17,7 +17,11 @@ export const NAV_BY_ROLE: Record<Role, NavItem[]> = {
   ADMIN: [
     { href: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
     { href: "/admin/users", label: "Users", icon: Users },
+    { href: "/admin/companies", label: "Companies", icon: Briefcase },
+    { href: "/admin/assessments", label: "Assessments", icon: ClipboardList },
     { href: "/admin/audit", label: "Audit logs", icon: ScrollText },
+    { href: "/admin/profile", label: "My profile", icon: UserRound },
+    { href: "/admin/settings", label: "Settings", icon: Settings },
   ],
   COMPANY: [
     { href: "/company", label: "Overview", icon: LayoutDashboard, exact: true },

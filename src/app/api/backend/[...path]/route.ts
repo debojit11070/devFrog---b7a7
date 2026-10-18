@@ -24,8 +24,9 @@ async function forward(
   const target = `${API_BASE_URL}/${path.map(encodeURIComponent).join("/")}${request.nextUrl.search}`;
   try {
     return await fetch(target, { method: request.method, headers, body, cache: "no-store" });
-  } catch {
+  } catch (error) {
     // Backend unreachable: return a clear error instead of crashing the handler.
+    console.error(`[api/backend] cannot reach ${target}`, error);
     return NextResponse.json({ success: false, message: "Cannot reach the API service." }, { status: 502 });
   }
 }

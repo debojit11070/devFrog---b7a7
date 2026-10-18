@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Pagination } from "@/components/shared/pagination";
 import { EmptyState, ErrorState } from "@/components/shared/states";
 import { Badge } from "@/components/ui/card";
+import { Select } from "@/components/ui/form-controls";
 import { useAuditLogs } from "@/hooks/api/admin-profile";
 import { useUrlState } from "@/hooks/use-url-state";
 import type { AuditLog } from "@/lib/api/types";
@@ -20,8 +21,9 @@ function describeMeta(meta: unknown): string {
 }
 
 export function AuditLogTable() {
-  const { update, page, limit } = useUrlState();
-  const query = useAuditLogs({ page, limit });
+  const { get, update, page, limit } = useUrlState();
+  const resource = get("resource");
+  const query = useAuditLogs({ page, limit, resource: resource || undefined });
 
   const columns: Column<AuditLog>[] = [
     {
@@ -69,6 +71,15 @@ export function AuditLogTable() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader title="Audit logs" description="Every sensitive change on the platform, newest first." />
+      <Select aria-label="Filter by resource" value={resource} onChange={(event) => update({ resource: event.target.value })} className="sm:w-56">
+        <option value="">All resources</option>
+        <option value="user">Users</option>
+        <option value="assessment">Assessments</option>
+        <option value="problem">Questions</option>
+        <option value="invitation">Invitations</option>
+        <option value="attempt">Attempts</option>
+        <option value="payment">Payments</option>
+      </Select>
 
       {query.isError ? (
         <ErrorState error={query.error} onRetry={() => query.refetch()} title="Audit logs couldn't be loaded" />

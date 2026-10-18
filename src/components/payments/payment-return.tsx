@@ -95,7 +95,7 @@ function Outcome({
   primary?: { href: string; label: string };
 }) {
   const Icon = tone === "success" ? CheckCircle2 : tone === "danger" ? XCircle : AlertTriangle;
-  const iconClass = tone === "success" ? "bg-emerald-50 text-success" : tone === "danger" ? "bg-rose-50 text-destructive" : "bg-amber-50 text-warning";
+  const iconClass = tone === "success" ? "bg-success/10 text-success" : tone === "danger" ? "bg-destructive/10 text-destructive" : "bg-warning/10 text-warning";
 
   return (
     <Card role="status" className="mx-auto w-full max-w-lg p-8 text-center">

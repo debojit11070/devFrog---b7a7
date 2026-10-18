@@ -38,11 +38,11 @@ const badgeVariants = cva(
     variants: {
       tone: {
         neutral: "border-border bg-muted text-muted-foreground",
-        brand: "border-indigo-200 bg-secondary text-secondary-foreground",
-        success: "border-emerald-200 bg-emerald-50 text-emerald-700",
-        warning: "border-amber-200 bg-amber-50 text-amber-700",
-        danger: "border-rose-200 bg-rose-50 text-rose-700",
-        info: "border-sky-200 bg-sky-50 text-sky-700",
+        brand: "border-primary/25 bg-secondary text-secondary-foreground",
+        success: "border-success/30 bg-success/10 text-success",
+        warning: "border-warning/30 bg-warning/10 text-warning",
+        danger: "border-destructive/30 bg-destructive/10 text-destructive",
+        info: "border-primary/25 bg-primary/10 text-primary",
       },
     },
     defaultVariants: { tone: "neutral" },
@@ -52,10 +52,10 @@ const badgeVariants = cva(
 const dotTone = {
   neutral: "bg-muted-foreground",
   brand: "bg-primary",
-  success: "bg-emerald-500",
-  warning: "bg-amber-500",
-  danger: "bg-rose-500",
-  info: "bg-sky-500",
+  success: "bg-success",
+  warning: "bg-warning",
+  danger: "bg-destructive",
+  info: "bg-primary",
 } as const;
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {

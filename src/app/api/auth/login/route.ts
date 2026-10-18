@@ -19,8 +19,9 @@ export async function POST(request: Request): Promise<NextResponse> {
       body: JSON.stringify(parsed.data),
       cache: "no-store",
     });
-  } catch {
-    // The backend could not be reached (wrong BACKEND_API_URL, network, cold start).
+  } catch (error) {
+    // The backend could not be reached (missing/wrong BACKEND_API_URL, network, cold start).
+    console.error(`[auth/login] cannot reach ${API_BASE_URL}/auth/login`, error);
     return NextResponse.json(
       { success: false, message: "Cannot reach the sign-in service. Please try again." },
       { status: 502 },

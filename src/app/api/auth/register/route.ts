@@ -21,7 +21,8 @@ export async function POST(request: Request): Promise<NextResponse> {
       body: JSON.stringify(payload),
       cache: "no-store",
     });
-  } catch {
+  } catch (error) {
+    console.error(`[auth/register] cannot reach ${API_BASE_URL}/auth/register`, error);
     return NextResponse.json(
       { success: false, message: "Cannot reach the registration service. Please try again." },
       { status: 502 },

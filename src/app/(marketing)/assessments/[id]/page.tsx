@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Clock, Layers, ShieldCheck, Trophy } from "lucide-react";
+import { AssessmentCard, AssessmentCover } from "@/components/marketing/assessment-card";
 import { Button } from "@/components/ui/button";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { ApiError } from "@/lib/api/error";
-import type { Assessment } from "@/lib/api/types";
+import type { Assessment, Paginated, QuestionType } from "@/lib/api/types";
 import { backendJson } from "@/lib/server/backend";
 import { getCurrentUser } from "@/lib/server/session";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDate, humanize } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -21,6 +22,15 @@ async function loadAssessment(id: string): Promise<Assessment | null> {
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) return null;
     throw error;
+  }
+}
+
+async function loadRelated(current: Assessment): Promise<Assessment[]> {
+  try {
+    const data = await backendJson<Paginated<Assessment>>("/assessments?limit=24&sortBy=createdAt&order=desc");
+    return data.items.filter((item) => item.id !== current.id).slice(0, 4);
+  } catch {
+    return [];
   }
 }
 
@@ -39,12 +49,23 @@ export default async function AssessmentDetailPage({ params }: PageProps) {
   const { id } = await params;
   const [assessment, user] = await Promise.all([loadAssessment(id), getCurrentUser()]);
   if (!assessment) notFound();
+  const related = await loadRelated(assessment);
+
+  const byType = assessment.problems.reduce<Record<string, { count: number; points: number }>>((acc, item) => {
+    const entry = acc[item.problem.type] ?? { count: 0, points: 0 };
+    entry.count += 1;
+    entry.points += item.points;
+    acc[item.problem.type] = entry;
+    return acc;
+  }, {});
+  const languages = Array.from(new Set(assessment.problems.map((item) => item.problem.language).filter(Boolean)));
 
   const isFree = assessment.priceCents === 0;
   const totalPoints = assessment.problems.reduce((sum, item) => sum + item.points, 0);
 
   return (
-    <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-3 lg:py-16">
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
+    <div className="grid gap-8 lg:grid-cols-3">
       <div className="lg:col-span-2">
         <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
           <Link href="/assessments" className="hover:text-foreground">Assessments</Link>
@@ -55,9 +76,38 @@ export default async function AssessmentDetailPage({ params }: PageProps) {
         {assessment.createdBy ? (
           <p className="mt-2 text-sm text-muted-foreground">Published by {assessment.createdBy.fullName}</p>
         ) : null}
-        <p className="mt-6 whitespace-pre-line leading-relaxed text-muted-foreground">{assessment.description}</p>
+        <AssessmentCover assessment={assessment} className="mt-6 h-56 rounded-xl sm:h-64" />
 
         <Card className="mt-8">
+          <CardHeader>
+            <CardTitle>Overview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="whitespace-pre-line leading-relaxed text-muted-foreground">{assessment.description}</p>
+          </CardContent>
+        </Card>
+
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Key information</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <dl className="grid gap-x-8 gap-y-3 text-sm sm:grid-cols-2">
+              <Spec label="Time limit" value={`${assessment.durationMin} minutes`} />
+              <Spec label="Passing score" value={`${assessment.passingScore}%`} />
+              <Spec label="Questions" value={`${assessment.problems.length} (${totalPoints} points)`} />
+              <Spec label="Price" value={isFree ? "Free" : formatCurrency(assessment.priceCents, assessment.currency)} />
+              <Spec label="Published" value={formatDate(assessment.publishedAt ?? assessment.createdAt)} />
+              <Spec label="Publisher" value={assessment.createdBy?.fullName ?? "DevForge company"} />
+              {languages.length > 0 ? <Spec label="Languages" value={languages.join(", ")} /> : null}
+              {(Object.keys(byType) as QuestionType[]).map((type) => (
+                <Spec key={type} label={`${humanize(type)} questions`} value={`${byType[type].count} (${byType[type].points} pts)`} />
+              ))}
+            </dl>
+          </CardContent>
+        </Card>
+
+        <Card className="mt-6">
           <CardHeader>
             <CardTitle>What you will answer</CardTitle>
           </CardHeader>
@@ -118,6 +168,27 @@ export default async function AssessmentDetailPage({ params }: PageProps) {
           </div>
         </Card>
       </aside>
+    </div>
+
+    {related.length > 0 ? (
+      <section aria-labelledby="related-heading" className="mt-16">
+        <h2 id="related-heading" className="text-2xl font-semibold tracking-tight">Related assessments</h2>
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {related.map((item) => (
+            <AssessmentCard key={item.id} assessment={item} />
+          ))}
+        </div>
+      </section>
+    ) : null}
+    </div>
+  );
+}
+
+function Spec({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className="text-right font-medium">{value}</dd>
     </div>
   );
 }

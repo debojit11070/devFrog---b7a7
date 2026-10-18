@@ -1,5 +1,6 @@
 "use client";
 
+import { BarChartCard } from "@/components/charts/bar-chart-card";
 import Link from "next/link";
 import { useMemo } from "react";
 import { ArrowRight, CheckCircle2, CreditCard, Mail, PlayCircle } from "lucide-react";
@@ -12,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMyInvitations, useMyPayments } from "@/hooks/api/invitations-payments";
 import { effectiveInvitationStatus } from "@/lib/domain/invitation-status";
-import { formatCurrency, formatDate, formatNumber } from "@/lib/utils";
+import { formatCurrency, formatDate, formatNumber, humanize } from "@/lib/utils";
 import { useCurrentUser } from "@/providers/user-provider";
 
 export function CandidateOverview() {
@@ -59,6 +60,30 @@ export function CandidateOverview() {
             </>
           )}
         </section>
+      )}
+
+      {invitations.isPending || invitations.isError ? null : (
+        <div className="grid gap-6 lg:grid-cols-2">
+          <BarChartCard
+            title="Invitations by status"
+            description="Where each of your invitations stands"
+            data={(["PENDING", "ACCEPTED", "DECLINED", "EXPIRED"] as const).map((status) => ({
+              label: humanize(status),
+              value: (invitations.data ?? []).filter((item) => effectiveInvitationStatus(item) === status).length,
+            }))}
+            valueLabel="Invitations"
+            kind="pie"
+          />
+          <BarChartCard
+            title="Payments by status"
+            description="Your payment history at a glance"
+            data={(["SUCCEEDED", "PENDING", "FAILED", "CANCELLED"] as const).map((status) => ({
+              label: humanize(status),
+              value: (payments.data ?? []).filter((item) => item.status === status).length,
+            }))}
+            valueLabel="Payments"
+          />
+        </div>
       )}
 
       <Card>

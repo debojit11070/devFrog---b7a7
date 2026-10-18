@@ -12,6 +12,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select } from "@/components/ui/form-controls";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAcceptInvitation, useDeclineInvitation, useMyInvitations, useMyPayments } from "@/hooks/api/invitations-payments";
+import { Pagination } from "@/components/shared/pagination";
+import { usePagedRows } from "@/hooks/use-paged-rows";
 import { useUrlState } from "@/hooks/use-url-state";
 import type { InvitationStatus } from "@/lib/api/types";
 import { effectiveInvitationStatus } from "@/lib/domain/invitation-status";
@@ -49,6 +51,8 @@ export function InvitationsList() {
     const all = invitations.data ?? [];
     return filter === "ALL" ? all : all.filter((invitation) => effectiveInvitationStatus(invitation) === filter);
   }, [invitations.data, filter]);
+
+  const paged = usePagedRows(rows, 6);
 
   return (
     <div className="flex flex-col gap-6">
@@ -91,7 +95,7 @@ export function InvitationsList() {
         </Card>
       ) : (
         <ul className="grid gap-4 lg:grid-cols-2">
-          {rows.map((invitation) => {
+          {paged.rows.map((invitation) => {
             const status = effectiveInvitationStatus(invitation);
             const { assessment } = invitation;
             const isPaid = assessment.priceCents === 0 || paidAssessmentIds.has(invitation.assessmentId);
@@ -170,6 +174,7 @@ export function InvitationsList() {
           })}
         </ul>
       )}
+      {rows.length > 0 ? <Pagination meta={paged.meta} onPageChange={paged.setPage} /> : null}
     </div>
   );
 }

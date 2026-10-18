@@ -1,8 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import { CreditCard } from "lucide-react";
 import { DataTable, type Column } from "@/components/shared/data-table";
+import { Pagination } from "@/components/shared/pagination";
+import { SearchInput } from "@/components/shared/search-input";
+import { Select } from "@/components/ui/form-controls";
+import { usePagedRows } from "@/hooks/use-paged-rows";
 import { PageHeader } from "@/components/shared/page-header";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { EmptyState, ErrorState } from "@/components/shared/states";
@@ -13,6 +18,19 @@ import { formatCurrency, formatDateTime, humanize } from "@/lib/utils";
 
 export function PaymentsTable() {
   const query = useMyPayments();
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
+
+  const filtered = useMemo(
+    () =>
+      (query.data ?? []).filter(
+        (row) =>
+          (!status || row.status === status) &&
+          (!search || (row.assessment?.title ?? "").toLowerCase().includes(search.toLowerCase())),
+      ),
+    [query.data, search, status],
+  );
+  const paged = usePagedRows(filtered);
 
   const columns: Column<Payment>[] = [
     {
@@ -58,13 +76,31 @@ export function PaymentsTable() {
     <div className="flex flex-col gap-6">
       <PageHeader title="Payments" description="Every payment you have made for premium assessments, with its current status." />
 
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <SearchInput label="Search payments" placeholder="Search by assessment" value={search} onValueChange={(value) => { setSearch(value); paged.setPage(1); }} />
+        <Select
+          aria-label="Filter by status"
+          value={status}
+          onChange={(event) => { setStatus(event.target.value); paged.setPage(1); }}
+          className="sm:ml-auto sm:w-48"
+        >
+          <option value="">All statuses</option>
+          <option value="SUCCEEDED">Succeeded</option>
+          <option value="PENDING">Pending</option>
+          <option value="FAILED">Failed</option>
+          <option value="CANCELLED">Cancelled</option>
+          <option value="REFUNDED">Refunded</option>
+        </Select>
+      </div>
+
       {query.isError ? (
         <ErrorState error={query.error} onRetry={() => query.refetch()} title="Payments couldn't be loaded" />
       ) : (
+        <>
         <DataTable
           caption="Payment history"
           columns={columns}
-          rows={query.data ?? []}
+          rows={paged.rows}
           rowKey={(row) => row.id}
           isLoading={query.isPending}
           empty={
@@ -80,6 +116,8 @@ export function PaymentsTable() {
             />
           }
         />
+        <Pagination meta={paged.meta} onPageChange={paged.setPage} />
+        </>
       )}
     </div>
   );

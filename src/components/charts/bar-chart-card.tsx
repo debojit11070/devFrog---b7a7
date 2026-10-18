@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { EmptyState } from "@/components/shared/states";
 import { Skeleton } from "@/components/ui/skeleton";
 
+export type ChartKind = "bar" | "line" | "pie";
+
 export interface ChartDatum {
   label: string;
   value: number;
@@ -14,22 +16,24 @@ export interface ChartDatum {
 
 // recharts is ~90kb gzipped and only renders on the admin dashboard, so it is
 // loaded on demand instead of bloating every route's initial bundle.
-const BarChartBody = dynamic(() => import("@/components/charts/bar-chart-body"), {
+const ChartBody = dynamic(() => import("@/components/charts/bar-chart-body"), {
   ssr: false,
   loading: () => <Skeleton className="h-full w-full" />,
 });
 
-/** Labelled bar chart in the app's palette. Renders an empty state rather than a blank chart. */
+/** Labelled bar / line / pie chart in the app's palette. Renders an empty state rather than a blank chart. */
 export function BarChartCard({
   title,
   description,
   data,
   valueLabel,
+  kind = "bar",
 }: {
   title: string;
   description?: string;
   data: ChartDatum[];
   valueLabel: string;
+  kind?: ChartKind;
 }) {
   const hasData = data.some((item) => item.value > 0);
 
@@ -42,7 +46,7 @@ export function BarChartCard({
       <CardContent>
         {hasData ? (
           <div className="h-64 w-full" role="img" aria-label={`${title}: ${data.map((d) => `${d.label} ${d.value}`).join(", ")}`}>
-            <BarChartBody data={data} valueLabel={valueLabel} />
+            <ChartBody data={data} valueLabel={valueLabel} kind={kind} />
           </div>
         ) : (
           <EmptyState icon={BarChart3} title="Nothing to chart yet" description="Data will appear once there is activity." />

@@ -24,7 +24,8 @@ export async function backendJson<T>(path: string, options: BackendOptions = {})
       body: body === undefined ? undefined : JSON.stringify(body),
       cache: "no-store",
     });
-  } catch {
+  } catch (error) {
+    console.error(`[server] cannot reach ${API_BASE_URL}${path}`, error);
     throw new ApiError("Cannot reach the API service.", 502);
   }
   const json = (await response.json().catch(() => null)) as ApiEnvelope<T> | null;

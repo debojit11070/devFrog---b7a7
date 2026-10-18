@@ -11,10 +11,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAdminStats } from "@/hooks/api/admin-profile";
+import { useAssessments } from "@/hooks/api/assessments";
 import { formatCurrency, formatDate, formatNumber, humanize } from "@/lib/utils";
 
 export function AdminOverview() {
   const stats = useAdminStats();
+  const published = useAssessments({ status: "PUBLISHED", limit: 100, sortBy: "createdAt", order: "asc" });
 
   if (stats.isError) {
     return (
@@ -39,6 +41,13 @@ export function AdminOverview() {
   }
 
   const data = stats.data;
+  // Assessments created per month, from the published list (oldest first).
+  const monthly = new Map<string, number>();
+  for (const item of published.data?.items ?? []) {
+    const key = new Intl.DateTimeFormat("en-US", { month: "short", year: "2-digit" }).format(new Date(item.createdAt));
+    monthly.set(key, (monthly.get(key) ?? 0) + 1);
+  }
+  const monthlyBars = Array.from(monthly, ([label, value]) => ({ label, value }));
   const attemptBars = data.attempts.byStatus.map((row) => ({
     label: humanize(row.status),
     value: row._count._all,
@@ -80,13 +89,22 @@ export function AdminOverview() {
           title="Users by role"
           description="Accounts on the platform, grouped by role"
           data={[
-            { label: "Candidates", value: data.users.candidates, color: "#0ea5e9" },
-            { label: "Companies", value: data.users.companies, color: "#8b5cf6" },
-            { label: "Other", value: Math.max(data.users.total - data.users.candidates - data.users.companies, 0), color: "#94a3b8" },
+            { label: "Candidates", value: data.users.candidates },
+            { label: "Companies", value: data.users.companies },
+            { label: "Other", value: Math.max(data.users.total - data.users.candidates - data.users.companies, 0) },
           ]}
           valueLabel="Users"
+          kind="pie"
         />
       </div>
+
+      <BarChartCard
+        title="Assessments published over time"
+        description="Published assessments grouped by the month they were created"
+        data={monthlyBars}
+        valueLabel="Assessments"
+        kind="line"
+      />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
