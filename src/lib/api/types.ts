@@ -211,3 +211,26 @@ export interface PaymentActionResult {
   checkoutUrl?: string | null;
   sessionId?: string;
 }
+
+/** Compact assessment returned by the /ai endpoints. */
+export interface AiAssessmentItem {
+  id: string;
+  title: string;
+  durationMin: number;
+  priceCents: number;
+  currency: string;
+  tags: string[];
+  difficulty: string | null;
+  /** Only on recommendations, and only when topics overlap. */
+  reason?: string;
+}
+
+export interface AiSuggestions {
+  items: AiAssessmentItem[];
+  reranked: boolean;
+}
+
+export interface AiRecommendations {
+  items: AiAssessmentItem[];
+  personalized: boolean;
+}

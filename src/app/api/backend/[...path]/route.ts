@@ -20,10 +20,13 @@ async function forward(
   const headers = new Headers({ Accept: "application/json" });
   if (body !== undefined) headers.set("Content-Type", "application/json");
   if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
+  // The API rate-limits per IP; pass the visitor's address so users do not share this server's quota.
+  const clientIp = request.headers.get("x-forwarded-for");
+  if (clientIp) headers.set("X-Forwarded-For", clientIp);
 
   const target = `${API_BASE_URL}/${path.map(encodeURIComponent).join("/")}${request.nextUrl.search}`;
   try {
-    return await fetch(target, { method: request.method, headers, body, cache: "no-store" });
+    return await fetch(target, { method: request.method, headers, body, cache: "no-store", signal: request.signal });
   } catch (error) {
     // Backend unreachable: return a clear error instead of crashing the handler.
     console.error(`[api/backend] cannot reach ${target}`, error);
@@ -43,6 +46,15 @@ async function handle(request: NextRequest, context: RouteContext): Promise<Next
   if (upstream.status === 401 && refreshToken) {
     tokens = await refreshSession(refreshToken);
     if (tokens) upstream = await forward(request, path, body, tokens.accessToken);
+  }
+
+  // Server-sent events (the AI chat) must be streamed through, not buffered.
+  const isStream = upstream.ok && (upstream.headers.get("Content-Type") ?? "").includes("text/event-stream");
+  if (isStream && upstream.body) {
+    return new NextResponse(upstream.body, {
+      status: upstream.status,
+      headers: { "Content-Type": "text/event-stream; charset=utf-8", "Cache-Control": "no-cache, no-transform", "X-Accel-Buffering": "no" },
+    });
   }
 
   const response = new NextResponse(await upstream.text(), {

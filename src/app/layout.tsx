@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { ChatWidget } from "@/components/ai/chat-widget";
 import { AppProviders } from "@/providers/app-providers";
 
 export const metadata: Metadata = {
@@ -34,7 +35,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         >
           Skip to content
         </a>
-        <AppProviders>{children}</AppProviders>
+        <AppProviders>
+          {children}
+          <ChatWidget />
+        </AppProviders>
       </body>
     </html>
   );

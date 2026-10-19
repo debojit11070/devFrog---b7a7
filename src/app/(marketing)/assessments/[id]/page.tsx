@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Clock, Layers, ShieldCheck, Trophy } from "lucide-react";
-import { AssessmentCard, AssessmentCover } from "@/components/marketing/assessment-card";
+import { RecommendedAssessments } from "@/components/ai/recommended-assessments";
+import { AssessmentCover } from "@/components/marketing/assessment-card";
 import { Button } from "@/components/ui/button";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { ApiError } from "@/lib/api/error";
-import type { Assessment, Paginated, QuestionType } from "@/lib/api/types";
+import type { Assessment, QuestionType } from "@/lib/api/types";
 import { backendJson } from "@/lib/server/backend";
 import { getCurrentUser } from "@/lib/server/session";
 import { formatCurrency, formatDate, humanize } from "@/lib/utils";
@@ -22,15 +23,6 @@ async function loadAssessment(id: string): Promise<Assessment | null> {
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) return null;
     throw error;
-  }
-}
-
-async function loadRelated(current: Assessment): Promise<Assessment[]> {
-  try {
-    const data = await backendJson<Paginated<Assessment>>("/assessments?limit=24&sortBy=createdAt&order=desc");
-    return data.items.filter((item) => item.id !== current.id).slice(0, 4);
-  } catch {
-    return [];
   }
 }
 
@@ -49,7 +41,6 @@ export default async function AssessmentDetailPage({ params }: PageProps) {
   const { id } = await params;
   const [assessment, user] = await Promise.all([loadAssessment(id), getCurrentUser()]);
   if (!assessment) notFound();
-  const related = await loadRelated(assessment);
 
   const byType = assessment.problems.reduce<Record<string, { count: number; points: number }>>((acc, item) => {
     const entry = acc[item.problem.type] ?? { count: 0, points: 0 };
@@ -170,16 +161,7 @@ export default async function AssessmentDetailPage({ params }: PageProps) {
       </aside>
     </div>
 
-    {related.length > 0 ? (
-      <section aria-labelledby="related-heading" className="mt-16">
-        <h2 id="related-heading" className="text-2xl font-semibold tracking-tight">Related assessments</h2>
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {related.map((item) => (
-            <AssessmentCard key={item.id} assessment={item} />
-          ))}
-        </div>
-      </section>
-    ) : null}
+    <RecommendedAssessments assessmentId={assessment.id} className="mt-16" />
     </div>
   );
 }

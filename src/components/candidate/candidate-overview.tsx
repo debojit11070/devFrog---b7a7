@@ -1,5 +1,6 @@
 "use client";
 
+import { RecommendedAssessments } from "@/components/ai/recommended-assessments";
 import { BarChartCard } from "@/components/charts/bar-chart-card";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -85,6 +86,8 @@ export function CandidateOverview() {
           />
         </div>
       )}
+
+      <RecommendedAssessments title="Recommended for you" />
 
       <Card>
         <CardHeader className="flex-row items-center justify-between space-y-0">

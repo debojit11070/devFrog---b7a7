@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { ClipboardCheck, FilterX } from "lucide-react";
 import { AssessmentCard, AssessmentCardSkeleton } from "@/components/marketing/assessment-card";
 import { Pagination } from "@/components/shared/pagination";
-import { SearchInput } from "@/components/shared/search-input";
+import { AssessmentSearch } from "@/components/ai/assessment-search";
 import { EmptyState, ErrorState } from "@/components/shared/states";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -93,12 +93,7 @@ export function AssessmentCatalog() {
   return (
     <div className="flex flex-col gap-6">
       <Card className="flex flex-col gap-4 p-4 sm:p-5">
-        <SearchInput
-          label="Search assessments"
-          placeholder="Search by title or topic"
-          value={search}
-          onValueChange={(value) => update({ q: value })}
-        />
+        <AssessmentSearch value={search} onValueChange={(value) => update({ q: value })} />
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
           <Select aria-label="Filter by price" value={pricing} onChange={setFilter("pricing")}>
             <option value="all">Any price</option>
