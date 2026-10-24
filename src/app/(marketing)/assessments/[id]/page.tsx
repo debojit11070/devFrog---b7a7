@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Clock, Layers, ShieldCheck, Trophy } from "lucide-react";
 import { RecommendedAssessments } from "@/components/ai/recommended-assessments";
 import { AssessmentCover } from "@/components/marketing/assessment-card";
-import { Button } from "@/components/ui/button";
+import { AssessmentActions } from "@/components/marketing/assessment-actions";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { ApiError } from "@/lib/api/error";
@@ -114,7 +114,14 @@ export default async function AssessmentDetailPage({ params }: PageProps) {
                     <div className="mt-1.5 flex flex-wrap gap-1.5">
                       <StatusBadge value={item.problem.type} />
                       <StatusBadge value={item.problem.difficulty} />
+                      {item.problem.language ? <Badge>{humanize(item.problem.language)}</Badge> : null}
                     </div>
+                    {item.problem.description ? (
+                      <details className="group mt-2 text-sm text-muted-foreground">
+                        <summary className="cursor-pointer select-none text-primary hover:underline">Preview question</summary>
+                        <p className="mt-2 whitespace-pre-line leading-relaxed">{item.problem.description}</p>
+                      </details>
+                    ) : null}
                   </div>
                   <span className="shrink-0 text-sm tabular-nums text-muted-foreground">{item.points} pts</span>
                 </li>
@@ -139,19 +146,7 @@ export default async function AssessmentDetailPage({ params }: PageProps) {
           <p className="mt-4 text-xs text-muted-foreground">Total available: {totalPoints} points.</p>
 
           <div className="mt-6 flex flex-col gap-3">
-            {user?.role === "CANDIDATE" ? (
-              <Button size="lg" asChild>
-                <Link href="/candidate/invitations">Go to my invitations</Link>
-              </Button>
-            ) : user ? (
-              <p className="rounded-lg bg-muted p-3 text-sm text-muted-foreground">
-                Candidates take assessments. You are signed in as a {user.role.toLowerCase()}.
-              </p>
-            ) : (
-              <Button size="lg" asChild>
-                <Link href={`/login?next=${encodeURIComponent("/candidate/invitations")}`}>Sign in to take this</Link>
-              </Button>
-            )}
+            <AssessmentActions assessment={assessment} role={user?.role ?? null} />
             <p className="flex items-start gap-2 text-xs text-muted-foreground">
               <ShieldCheck className="mt-0.5 size-4 shrink-0 text-success" aria-hidden />
               Invitations are sent by the company. Your answers are saved as you go.

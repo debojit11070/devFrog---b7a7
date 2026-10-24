@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/form-controls";
 import { FormField, fieldAria } from "@/components/shared/form-field";
-import { SocialButtons } from "@/components/auth/social-buttons";
 import { useSignIn, type Credentials } from "@/components/auth/use-sign-in";
 import { DEMO_ACCOUNTS } from "@/lib/constants";
 import { loginSchema, type LoginFormValues } from "@/lib/validations/auth";
@@ -53,7 +52,6 @@ export function LoginForm() {
           <CardDescription>Sign in to continue to your dashboard.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-5">
-          <SocialButtons />
           <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
             <FormField id="email" label="Email" error={errors.email}>
               <Input type="email" autoComplete="email" {...fieldAria("email", errors.email)} {...register("email")} />

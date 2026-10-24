@@ -9,7 +9,8 @@ import { getCurrentUser } from "@/lib/server/session";
  */
 export default async function AppLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const user = await getCurrentUser();
-  if (!user) redirect("/login");
+  // Clears the stale cookies first; sending a still-"valid" cookie to /login would bounce straight back here.
+  if (!user) redirect("/api/auth/expire");
 
   return (
     <UserProvider user={user}>

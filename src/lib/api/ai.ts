@@ -74,3 +74,10 @@ export function chatErrorMessage(error: unknown): string {
   }
   return "Something went wrong. Please try again.";
 }
+
+export const OPEN_CHAT_EVENT = "devforge:open-chat";
+
+/** Opens the support chatbot from anywhere on the page, optionally sending a first question. */
+export function openChat(message?: string): void {
+  window.dispatchEvent(new CustomEvent<{ message?: string }>(OPEN_CHAT_EVENT, { detail: { message } }));
+}

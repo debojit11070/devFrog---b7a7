@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Bot, MessageCircle, Send, Square, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/form-controls";
-import { CHAT_MAX_LENGTH, chatErrorMessage, streamChat, trimHistory, type ChatMessage } from "@/lib/api/ai";
+import { CHAT_MAX_LENGTH, OPEN_CHAT_EVENT, chatErrorMessage, streamChat, trimHistory, type ChatMessage } from "@/lib/api/ai";
 import { cn } from "@/lib/utils";
 
 const SUGGESTIONS = ["How do I start an assessment?", "How do invitations work?", "How do payments work?"];
@@ -34,8 +34,17 @@ export function ChatWidget() {
     if (open) inputRef.current?.focus();
   }, [open]);
 
-  // Keep the assistant out of the way while a candidate is sitting an exam.
-  if (pathname.startsWith("/candidate/attempts")) return null;
+  // Other components can open the chat (and ask a question) through `openChat()`.
+  const sendRef = useRef<(text: string) => Promise<void>>(async () => undefined);
+  useEffect(() => {
+    function onOpen(event: Event) {
+      setOpen(true);
+      const message = (event as CustomEvent<{ message?: string }>).detail?.message;
+      if (message) void sendRef.current(message);
+    }
+    window.addEventListener(OPEN_CHAT_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_CHAT_EVENT, onOpen);
+  }, []);
 
   async function send(text: string) {
     const content = text.trim().slice(0, CHAT_MAX_LENGTH);
@@ -73,6 +82,13 @@ export function ChatWidget() {
       abortRef.current = null;
     }
   }
+
+  useEffect(() => {
+    sendRef.current = send;
+  });
+
+  // Keep the assistant out of the way while a candidate is sitting an exam.
+  if (pathname.startsWith("/candidate/attempts")) return null;
 
   function reset() {
     abortRef.current?.abort();

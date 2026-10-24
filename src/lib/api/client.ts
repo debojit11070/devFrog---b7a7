@@ -35,6 +35,10 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
   });
 
   const json = (await response.json().catch(() => null)) as ApiEnvelope<T> | null;
+  if (response.status === 401 && typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
+    // The proxy already tried to refresh the session; if it still fails the user must sign in again.
+    window.location.assign(`/login?next=${encodeURIComponent(window.location.pathname + window.location.search)}`);
+  }
   if (!response.ok || !json?.success) {
     throw new ApiError(json?.message ?? "Something went wrong. Please try again.", response.status, json?.errors);
   }

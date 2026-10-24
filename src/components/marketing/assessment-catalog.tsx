@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { ClipboardCheck, FilterX } from "lucide-react";
 import { AssessmentCard, AssessmentCardSkeleton } from "@/components/marketing/assessment-card";
 import { Pagination } from "@/components/shared/pagination";
+import { RecommendedAssessments } from "@/components/ai/recommended-assessments";
 import { AssessmentSearch } from "@/components/ai/assessment-search";
 import { EmptyState, ErrorState } from "@/components/shared/states";
 import { Button } from "@/components/ui/button";
@@ -168,6 +169,8 @@ export function AssessmentCatalog() {
           />
         </>
       )}
+
+      <RecommendedAssessments className="mt-8" title="Picked for you by AI" />
     </div>
   );
 }

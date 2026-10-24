@@ -79,7 +79,8 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   let claims = accessToken ? decodeJwtClaims(accessToken) : null;
   let tokens: TokenPair | null = null;
 
-  if ((rule || isAuthPage) && refreshToken && (!claims || isExpiring(claims))) {
+  // Public pages refresh too, so the header never shows a signed-in user as signed out after the access token expires.
+  if (refreshToken && (!claims || isExpiring(claims))) {
     tokens = await refreshSession(refreshToken);
     if (tokens) claims = decodeJwtClaims(tokens.accessToken);
   }

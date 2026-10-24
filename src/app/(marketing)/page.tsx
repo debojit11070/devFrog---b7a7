@@ -13,6 +13,7 @@ import {
   Timer,
   UserRound,
 } from "lucide-react";
+import { RecommendedAssessments } from "@/components/ai/recommended-assessments";
 import { AssessmentCard } from "@/components/marketing/assessment-card";
 import { HeroSlider } from "@/components/marketing/hero-slider";
 import { Button } from "@/components/ui/button";
@@ -176,6 +177,8 @@ export default async function HomePage() {
           )}
         </div>
       </section>
+
+      <RecommendedAssessments className="mx-auto max-w-7xl px-4 pb-16 sm:px-6" title="Recommended for you" />
 
       {/* 6. Question types / categories */}
       <section aria-labelledby="types-heading" className="border-y border-border bg-card/60">
